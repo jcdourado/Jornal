@@ -7,8 +7,12 @@
 <meta name="author" content="Julio Cezar Dourado">
 <meta name="viewport" content="width=device-width">
 <title>Notícias</title>
+<% if(session.getAttribute("usuarioLogado") == null){ %>
+	<meta http-equiv="refresh" content=0;url="login.jsp">
+<%} %>
 </head>
 <body>
+
 	<form action="UsuarioController" method="post">
 		<input type="submit" name="cmd" value="Ver Conta">
 		<input type="submit" name="cmd" value="Deletar Conta">
