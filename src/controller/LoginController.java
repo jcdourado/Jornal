@@ -31,7 +31,8 @@ public class LoginController extends HttpServlet{
 			try {
 				u = dao.consultar(u);
 				if(u != null){
-					resp.sendRedirect("erro.jsp");
+					req.getSession().setAttribute("usuarioLogado", u);
+					resp.sendRedirect("noticias.jsp");
 				}
 				else{
 					req.getSession().setAttribute("msgAcao", "Usuário não foi encontrado!");

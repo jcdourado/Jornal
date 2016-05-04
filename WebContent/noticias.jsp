@@ -9,8 +9,11 @@
 <title>Notícias</title>
 </head>
 <body>
+	<form action="UsuarioController" method="post">
+		<input type="submit" name="cmd" value="Ver Conta">
+		<input type="submit" name="cmd" value="Deletar Conta">
+	</form>
 
-
-
+	
 </body>
 </html>
