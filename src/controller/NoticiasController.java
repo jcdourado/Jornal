@@ -16,6 +16,7 @@ import javax.servlet.http.HttpServletResponse;
 
 import dao.NoticiaDAO;
 import model.Noticia;
+import model.Usuario;
 
 @WebServlet("/NoticiasController")
 public class NoticiasController extends HttpServlet{
@@ -26,6 +27,7 @@ public class NoticiasController extends HttpServlet{
 	private static final long serialVersionUID = 1L;
 	NoticiaDAO dao = new NoticiaDAO();
 	List<Noticia> noticias = null;
+	List<Noticia> noticiasNaoAprovadas = null;
 	
 	@Override
 	public void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
@@ -68,6 +70,7 @@ public class NoticiasController extends HttpServlet{
 			}
 			
 		} else if("Voltar".equals(cmd)){
+			req.getSession().setAttribute("noticiasNaoAprovadas", null);
 			resp.sendRedirect("noticias.jsp");
 		}
 	}
@@ -75,7 +78,44 @@ public class NoticiasController extends HttpServlet{
 	public void pegarTodas(HttpServletRequest req, HttpServletResponse resp) throws ClassNotFoundException, SQLException, IOException{
 		noticias = dao.pegaTodas();
 		req.getSession().setAttribute("noticias", noticias);
-		resp.sendRedirect("noticias.jsp");
 	}
 	
+	public void pegarTodasNaoAprovadas(HttpServletRequest req, HttpServletResponse resp) throws ClassNotFoundException, SQLException, IOException{
+		noticiasNaoAprovadas = dao.consultar();
+		req.getSession().setAttribute("noticiasNaoAprovadas", noticiasNaoAprovadas);
+	}
+	
+	@Override
+	public void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+		String decisao = req.getParameter("acc");
+		if("Aprovar".equals(decisao)){
+			Noticia n;
+			try {
+				n = dao.consultar(req.getParameter("tit"));
+				Usuario u = (Usuario)req.getSession().getAttribute("usuarioLogado");
+				n.setAprovador_id(u.getUsuario());
+				n.setAprovador_data(new Date());
+				dao.aceitar(n);
+				req.getSession().setAttribute("noticiasNaoAprovadas", null);
+				req.getSession().setAttribute("noticias", null);
+				resp.sendRedirect("noticias.jsp");
+			} catch (ClassNotFoundException e) {
+				e.printStackTrace();
+			} catch (SQLException e) {
+				e.printStackTrace();
+			}
+		} else{
+			Noticia n;
+			try {
+				dao.remover(req.getParameter("tit"));
+				req.getSession().setAttribute("noticiasNaoAprovadas", null);
+				req.getSession().setAttribute("noticias", null);
+				resp.sendRedirect("noticias.jsp");
+			} catch (ClassNotFoundException | SQLException e) {
+				e.printStackTrace();
+			}
+			
+			
+		}
+	}
 }

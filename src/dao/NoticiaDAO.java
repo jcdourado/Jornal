@@ -44,27 +44,26 @@ public class NoticiaDAO {
 		pS.executeUpdate();
 	}
 	
-	public Noticia consultar(String noticias) throws ClassNotFoundException, SQLException{
+	public List<Noticia> consultar() throws ClassNotFoundException, SQLException{
 		Connection con = DBUtil.getDBUtil().getConnection();
-		String sql = "SELECT * FROM NOTICIAS WHERE TITULO = ?";
+		String sql = "SELECT * FROM NOTICIAS WHERE APROVADOR_ID IS NULL";
 		PreparedStatement pS = con.prepareStatement(sql);
-		pS.setString(1, noticias);
 		ResultSet rS = pS.executeQuery();
+		List<Noticia> noticias= new ArrayList<Noticia>();
 		if(rS.next()){
 			Noticia n = new Noticia();
-			n.setTitulo(noticias);
+			n.setTitulo(rS.getString("titulo"));
 			n.setTipo(rS.getString("tipo"));
 			n.setJornalista(rS.getString("jornalista"));
 			n.setDescricao(rS.getString("descricao"));
 			java.util.Date ds = new Date(rS.getDate("DATA_CRIACAO").getTime());
 			n.setDataCriacao(ds);
-			n.setAprovador_id(rS.getString("aprovador_id"));
-			ds = new Date(rS.getDate("APROVADOR_DATA").getTime());
-			n.setAprovador_data(ds);
-			return n;
+			noticias.add(n);
 		}
-		return null;
+		return noticias;
 	}
+	
+	
 	
 	public List<Noticia> consultarUma(String NOME) throws ClassNotFoundException, SQLException{
 		Connection con = DBUtil.getDBUtil().getConnection();
@@ -87,6 +86,25 @@ public class NoticiaDAO {
 			noticias.add(n);
 		}
 		return noticias;
+	}
+	
+	public Noticia consultar(String noticias) throws ClassNotFoundException, SQLException{
+		Connection con = DBUtil.getDBUtil().getConnection();
+		String sql = "SELECT * FROM NOTICIAS WHERE TITULO = ?";
+		PreparedStatement pS = con.prepareStatement(sql);
+		pS.setString(1, noticias);
+		ResultSet rS = pS.executeQuery();
+		if(rS.next()){
+			Noticia n = new Noticia();
+			n.setTitulo(noticias);
+			n.setTipo(rS.getString("tipo"));
+			n.setJornalista(rS.getString("jornalista"));
+			n.setDescricao(rS.getString("descricao"));
+			java.util.Date ds = new Date(rS.getDate("DATA_CRIACAO").getTime());
+			n.setDataCriacao(ds);
+			return n;
+		}
+		return null;
 	}
 	
 	public List<Noticia> pegaTodas() throws ClassNotFoundException, SQLException{

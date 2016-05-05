@@ -19,10 +19,30 @@
 		<input type="submit" name="cmd" value="Deletar Conta">
 	</form>
 	<%-- Aqui vem as coisas que são visiveis aos usuario logados --%>
+
+	<% if (session.getAttribute("noticiasNaoAprovadas") == null){
+		NoticiasController ctr = new NoticiasController();
+		ctr.pegarTodasNaoAprovadas(request,response);
+	} %>
+	
+		<table>
+			<%SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy"); %>
+				<% for(Noticia n : (List<Noticia>) session.getAttribute("noticiasNaoAprovadas")){ %>
+					<tr><td><%=n.getTitulo() %></td></tr>
+					<tr><td><%=n.getTipo() %></td></tr>
+					<tr><td><%=n.getJornalista() %></td></tr>
+					<tr><td> <%=n.getDescricao() %></td></tr>
+					<tr><td><%=sdf.format(n.getDataCriacao()) %></td></tr>
+					<tr><td><a href="NoticiasController?tit=<%=n.getTitulo()%>&acc=Aprovar" >Aprovar</a> </td></tr>
+					<tr><td><a href="NoticiasController?tit=<%=n.getTitulo()%>&acc=Reprovar " >Reprovar</a> </td></tr>
+				<% } %>
+		</table>
 <%} %>
 	<%-- Aqui vem as coisas que são visiveis á todos --%>
 	
-	<a href="login.jsp">Logar</a>
+	<% if(session.getAttribute("usuarioLogado") == null){ %>
+			<a href="login.jsp">Logar</a>
+	<% } %>
 	
 	<% if (session.getAttribute("noticias") == null){
 		NoticiasController ctr = new NoticiasController();
